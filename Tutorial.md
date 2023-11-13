@@ -17,3 +17,9 @@ Video4Linux, V4L for short, is a collection of device drivers and an API for sup
 $ v4l2-ctl --device=/dev/video2 --set-fmt-video=width=3840,height=2160,pixelformat=MJPG --stream-mmap --stream-to=frame.jpg --stream-count=1
 ```
 
+## Derek mallow Example for host PC
+
+Requirements
+--Install opencv (PACKAGE_OPENCV2)
+--Install libv4l2 (PACKAGE_LIBV4L)
+
