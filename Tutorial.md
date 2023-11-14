@@ -80,8 +80,6 @@ $ ffmpeg -f mjpeg -i output.raw -vcodec copy output.mp4
 Now the video can be viewed.
 
 
-
-
 ## Capture a single image
 ```
 $ v4l2-ctl --device=/dev/video2 --set-fmt-video=width=3840,height=2160,pixelformat=MJPG --stream-mmap --stream-to=frame.jpg --stream-count=1

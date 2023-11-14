@@ -47,6 +47,12 @@ static int              out_buf;
 static int              force_format;
 static int              frame_count = 70;
 
+//M.Le Roux Custom
+static int              width = 640;
+static int              height = 480;
+static int              test;
+//
+
 static void errno_exit(const char *s)
 {
         fprintf(stderr, "%s error %d, %s\n", s, errno, strerror(errno));
@@ -483,8 +489,9 @@ static void init_device(void)
 
         fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         if (force_format) {
-                fmt.fmt.pix.width       = 640;
-                fmt.fmt.pix.height      = 480;
+                fprintf(stderr, "Width: %i | Height: %i\n", width, height);
+                fmt.fmt.pix.width       = width;
+                fmt.fmt.pix.height      = height;
                 fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
                 fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 
@@ -567,11 +574,15 @@ static void usage(FILE *fp, int argc, char **argv)
                  "-o | --output        Outputs stream to stdout\n"
                  "-f | --format        Force format to 640x480 YUYV\n"
                  "-c | --count         Number of frames to grab [%i]\n"
+                 "-x | --960x540       Format Option X\n"
+                 "-y | --1280x720      Format Option Y\n"
+                 "-z | --1920x1080     Format Option Z\n"
                  "",
                  argv[0], dev_name, frame_count);
 }
 
-static const char short_options[] = "d:hmruofc:";
+//It seems like the required arguments needs to a have ':' afterwards. 
+static const char short_options[] = "d:hmruofc:xyz";
 
 static const struct option
 long_options[] = {
@@ -583,17 +594,24 @@ long_options[] = {
         { "output", no_argument,       NULL, 'o' },
         { "format", no_argument,       NULL, 'f' },
         { "count",  required_argument, NULL, 'c' },
+        { "960x540",  no_argument,       NULL, 'x' },
+        { "1280x720", no_argument,       NULL, 'y' },
+        { "1920x1080", no_argument,       NULL, 'z' },
         { 0, 0, 0, 0 }
 };
 
 int main(int argc, char **argv)
 {
         dev_name = "/dev/video0";
+        width = 640;
+        height = 480;
 
         for (;;) {
                 int idx;
                 int c;
 
+
+                
                 c = getopt_long(argc, argv,
                                 short_options, long_options, &idx);
 
@@ -637,8 +655,24 @@ int main(int argc, char **argv)
                         frame_count = strtol(optarg, NULL, 0);
                         if (errno)
                                 errno_exit(optarg);
+                        fprintf(stderr, "%i is the frame count\n", frame_count);
+                        break;
+                //M.Le Roux
+                case 'x':
+                        width = 960;
+                        height = 540;
                         break;
 
+                case 'y':
+                        width = 1280;
+                        height = 720;
+                        break;
+
+                case 'z':
+                        width = 1920;
+                        height = 1080;
+                        break;
+                //
                 default:
                         usage(stderr, argc, argv);
                         exit(EXIT_FAILURE);
