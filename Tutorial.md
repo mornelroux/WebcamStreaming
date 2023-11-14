@@ -39,6 +39,8 @@ Use `--list-formats-ext` to view more detail on the available formats.
 
 For this tutorial, MJPEG will be used.
 
+Get the `capture.c` source file available on the [Linux Foundation Website](https://www.kernel.org/doc/html/v4.9/media/uapi/v4l/capture.c.html). 
+
 Within the `capture.c` source, change the format from `YUYV` to `MJPEG`.
 
 ```
@@ -48,8 +50,37 @@ Within the `capture.c` source, change the format from `YUYV` to `MJPEG`.
         fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 ```
 
+Note that the orginial `capture.c`'s output string from the function `fprintf()` has some of the `\n` removed, which means the text output will be compressed. 
 
-Get the `capture.c` source file available on the [Linux Foundation Website](https://www.kernel.org/doc/html/v4.9/media/uapi/v4l/capture.c.html). 
+After the fixes were made, build the program. For example, the program may be build with:
+
+```
+$ gcc capture.c -o capture.out
+```
+
+### Capture a short video
+
+In the terminal, execute the following:
+
+```
+$ ./capture.out -f -d /dev/video0 -c 300 -o > output.raw
+```
+
+Explaination:
+`-f` referes the the default format set, which was changed to MJPEG.
+`-c` referes to the total number of frames. 10 second * 30 FPS = 300 frames
+`-o` referes to the destination file for the raw data.
+
+Encode the video data with:
+
+```
+$ ffmpeg -f mjpeg -i output.raw -vcodec copy output.mp4
+```
+
+Now the video can be viewed.
+
+
+
 
 ## Capture a single image
 ```
