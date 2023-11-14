@@ -49,7 +49,7 @@ static int              frame_count = 70;
 
 static void errno_exit(const char *s)
 {
-        fprintf(stderr, "%s error %d, %s\\n", s, errno, strerror(errno));
+        fprintf(stderr, "%s error %d, %s\n", s, errno, strerror(errno));
         exit(EXIT_FAILURE);
 }
 
@@ -194,7 +194,7 @@ static void mainloop(void)
                         }
 
                         if (0 == r) {
-                                fprintf(stderr, "select timeout\\n");
+                                fprintf(stderr, "select timeout\n");
                                 exit(EXIT_FAILURE);
                         }
 
@@ -300,7 +300,7 @@ static void init_read(unsigned int buffer_size)
         buffers = calloc(1, sizeof(*buffers));
 
         if (!buffers) {
-                fprintf(stderr, "Out of memory\\n");
+                fprintf(stderr, "Out of memory\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -308,7 +308,7 @@ static void init_read(unsigned int buffer_size)
         buffers[0].start = malloc(buffer_size);
 
         if (!buffers[0].start) {
-                fprintf(stderr, "Out of memory\\n");
+                fprintf(stderr, "Out of memory\n");
                 exit(EXIT_FAILURE);
         }
 }
@@ -326,7 +326,7 @@ static void init_mmap(void)
         if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req)) {
                 if (EINVAL == errno) {
                         fprintf(stderr, "%s does not support "
-                                 "memory mappingn", dev_name);
+                                 "memory mapping\n", dev_name);
                         exit(EXIT_FAILURE);
                 } else {
                         errno_exit("VIDIOC_REQBUFS");
@@ -334,7 +334,7 @@ static void init_mmap(void)
         }
 
         if (req.count < 2) {
-                fprintf(stderr, "Insufficient buffer memory on %s\\n",
+                fprintf(stderr, "Insufficient buffer memory on %s\n",
                          dev_name);
                 exit(EXIT_FAILURE);
         }
@@ -342,7 +342,7 @@ static void init_mmap(void)
         buffers = calloc(req.count, sizeof(*buffers));
 
         if (!buffers) {
-                fprintf(stderr, "Out of memory\\n");
+                fprintf(stderr, "Out of memory\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -384,7 +384,7 @@ static void init_userp(unsigned int buffer_size)
         if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req)) {
                 if (EINVAL == errno) {
                         fprintf(stderr, "%s does not support "
-                                 "user pointer i/on", dev_name);
+                                 "user pointer i/o\n", dev_name);
                         exit(EXIT_FAILURE);
                 } else {
                         errno_exit("VIDIOC_REQBUFS");
@@ -394,7 +394,7 @@ static void init_userp(unsigned int buffer_size)
         buffers = calloc(4, sizeof(*buffers));
 
         if (!buffers) {
-                fprintf(stderr, "Out of memory\\n");
+                fprintf(stderr, "Out of memory\n");
                 exit(EXIT_FAILURE);
         }
 
@@ -403,7 +403,7 @@ static void init_userp(unsigned int buffer_size)
                 buffers[n_buffers].start = malloc(buffer_size);
 
                 if (!buffers[n_buffers].start) {
-                        fprintf(stderr, "Out of memory\\n");
+                        fprintf(stderr, "Out of memory\n");
                         exit(EXIT_FAILURE);
                 }
         }
@@ -419,7 +419,7 @@ static void init_device(void)
 
         if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
                 if (EINVAL == errno) {
-                        fprintf(stderr, "%s is no V4L2 device\\n",
+                        fprintf(stderr, "%s is no V4L2 device\n",
                                  dev_name);
                         exit(EXIT_FAILURE);
                 } else {
@@ -428,7 +428,7 @@ static void init_device(void)
         }
 
         if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-                fprintf(stderr, "%s is no video capture device\\n",
+                fprintf(stderr, "%s is no video capture device\n",
                          dev_name);
                 exit(EXIT_FAILURE);
         }
@@ -436,7 +436,7 @@ static void init_device(void)
         switch (io) {
         case IO_METHOD_READ:
                 if (!(cap.capabilities & V4L2_CAP_READWRITE)) {
-                        fprintf(stderr, "%s does not support read i/o\\n",
+                        fprintf(stderr, "%s does not support read i/o\n",
                                  dev_name);
                         exit(EXIT_FAILURE);
                 }
@@ -445,7 +445,7 @@ static void init_device(void)
         case IO_METHOD_MMAP:
         case IO_METHOD_USERPTR:
                 if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
-                        fprintf(stderr, "%s does not support streaming i/o\\n",
+                        fprintf(stderr, "%s does not support streaming i/o\n",
                                  dev_name);
                         exit(EXIT_FAILURE);
                 }
@@ -485,7 +485,7 @@ static void init_device(void)
         if (force_format) {
                 fmt.fmt.pix.width       = 640;
                 fmt.fmt.pix.height      = 480;
-                fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+                fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
                 fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 
                 if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt))
@@ -534,20 +534,20 @@ static void open_device(void)
         struct stat st;
 
         if (-1 == stat(dev_name, &st)) {
-                fprintf(stderr, "Cannot identify '%s': %d, %s\\n",
+                fprintf(stderr, "Cannot identify '%s': %d, %s\n",
                          dev_name, errno, strerror(errno));
                 exit(EXIT_FAILURE);
         }
 
         if (!S_ISCHR(st.st_mode)) {
-                fprintf(stderr, "%s is no devicen", dev_name);
+                fprintf(stderr, "%s is no device\n", dev_name);
                 exit(EXIT_FAILURE);
         }
 
         fd = open(dev_name, O_RDWR /* required */ | O_NONBLOCK, 0);
 
         if (-1 == fd) {
-                fprintf(stderr, "Cannot open '%s': %d, %s\\n",
+                fprintf(stderr, "Cannot open '%s': %d, %s\n",
                          dev_name, errno, strerror(errno));
                 exit(EXIT_FAILURE);
         }
@@ -556,17 +556,17 @@ static void open_device(void)
 static void usage(FILE *fp, int argc, char **argv)
 {
         fprintf(fp,
-                 "Usage: %s [options]\\n\\n"
-                 "Version 1.3\\n"
-                 "Options:\\n"
-                 "-d | --device name   Video device name [%s]n"
-                 "-h | --help          Print this messagen"
-                 "-m | --mmap          Use memory mapped buffers [default]n"
-                 "-r | --read          Use read() callsn"
-                 "-u | --userp         Use application allocated buffersn"
-                 "-o | --output        Outputs stream to stdoutn"
-                 "-f | --format        Force format to 640x480 YUYVn"
-                 "-c | --count         Number of frames to grab [%i]n"
+                 "Usage: %s [options]\n\n"
+                 "Version 1.3\n"
+                 "Options:\n"
+                 "-d | --device name   Video device name [%s]\n"
+                 "-h | --help          Print this message\n"
+                 "-m | --mmap          Use memory mapped buffers [default]\n"
+                 "-r | --read          Use read() calls\n"
+                 "-u | --userp         Use application allocated buffers\n"
+                 "-o | --output        Outputs stream to stdout\n"
+                 "-f | --format        Force format to 640x480 YUYV\n"
+                 "-c | --count         Number of frames to grab [%i]\n"
                  "",
                  argv[0], dev_name, frame_count);
 }
@@ -652,6 +652,6 @@ int main(int argc, char **argv)
         stop_capturing();
         uninit_device();
         close_device();
-        fprintf(stderr, "\\n");
+        fprintf(stderr, "\n");
         return 0;
 }
