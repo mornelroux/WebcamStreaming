@@ -175,10 +175,12 @@ static int read_frame(void)
 static void mainloop(void)
 {
         unsigned int count;
+        unsigned int loopIsInfinite = 0;
 
+        if (frame_count == 0) loopIsInfinite = 1;
         count = frame_count;
 
-        while (count-- > 0) {
+        while ((count-- > 0)||(loopIsInfinite)) {
                 for (;;) {
                         fd_set fds;
                         struct timeval tv;
@@ -657,11 +659,9 @@ int main(int argc, char **argv)
 
                 case 'c':
                         errno = 0;
-                        fprintf(stderr, "%s is the frame count\n", optarg);
                         frame_count = strtol(optarg, NULL, 0);
                         if (errno)
                                 errno_exit(optarg);
-                        //fprintf(stderr, "%i is the frame count\n", frame_count);
                         break;
                 //M.Le Roux
                 case 'x':

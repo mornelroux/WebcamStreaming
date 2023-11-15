@@ -52,6 +52,24 @@ Within the `capture.c` source, change the format from `YUYV` to `MJPEG`.
 
 Note that the orginial `capture.c`'s output string from the function `fprintf()` has some of the `\n` removed, which means the text output will be compressed. 
 
+More additions are needed to allow infinate streaming of the output. Therefore, instead of saving raw data to a file, the data will be streamed to the terminal, where it will be piped to `ffmpeg` to stream. Modifications were made under the `mainloop()` function.
+
+        ```
+        static void mainloop(void)
+        {
+                unsigned int count;
+                unsigned int loopIsInfinite = 0;
+
+                if (frame_count == 0) loopIsInfinite = 1;
+                count = frame_count;
+
+                while ((count-- > 0)||(loopIsInfinite)) {
+                        for (;;) {
+                                fd_set fds;
+                                struct timeval tv;
+                [...]
+        ```
+
 After the fixes were made, build the program. For example, the program may be build with:
 
 ```
@@ -80,10 +98,35 @@ $ ffmpeg -f mjpeg -i output.raw -vcodec copy output.mp4
 Now the video can be viewed.
 
 
+## Stream video over UDP
+
+These instructions is for streaming live video (with much latency) to your own host with UDP. Open two terminals side by side. One terminal open at the `capture.c` directory (host) and the other at a random dicretory(client).
+
+At the client directory, use `ffplay` to listen on the UDP port:
+
+```
+ffplay udp://192.168.8.150:1234/
+```
+
+At the host directory, stream the video from the captured output by piping the raw data. 
+
+```
+/capture -d /dev/video0 -o -c0|ffmpeg -i - -c:v libx264 -f mpegts udp://127.0.0.1:1234
+```
+
+
+```
+./capture -d /dev/video5 -o -c0|ffmpeg -i - -c:v libx264 -preset ultrafast -tune zerolatency -f mpegts udp://127.0.0.1:1234
+```
+
+
 ## Capture a single image
 ```
 $ v4l2-ctl --device=/dev/video2 --set-fmt-video=width=3840,height=2160,pixelformat=MJPG --stream-mmap --stream-to=frame.jpg --stream-count=1
 ```
+
+Install avconv
+
 
 ## Derek mallow Example for host PC
 
