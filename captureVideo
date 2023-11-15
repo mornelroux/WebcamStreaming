@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+#User input
+dev=$1
+sec=$2
+
+
+#Frames per second (30 at Default)
+fps=30
+frames=$((fps * $sec))
+
+
+ts=$(date "+%H%M%S")
+
+rm $PWD/output/*.raw
+rm $PWD/output/*.mp4
+
+echo "Capturing $sec second video ($frames frames)..."
+$PWD/capture.out -d $dev -c $frames -o > output/output.raw
+echo "Video captured."
+
+echo "Applying .mp4 header..."
+ffmpeg -f mjpeg -i output/output.raw -vcodec copy output/output-$ts.mp4 2>/dev/null
+echo "Video capture completed. Video can be found under output/output.mp4"
