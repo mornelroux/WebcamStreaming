@@ -577,12 +577,15 @@ static void usage(FILE *fp, int argc, char **argv)
                  "-x | --960x540       Format Option X\n"
                  "-y | --1280x720      Format Option Y\n"
                  "-z | --1920x1080     Format Option Z\n"
+                 "-a | --adjusted      Format Option to have custom format\n"
+                 "-w | --width         Format Image Width\n"
+                 "-l | --length        Format Image Length\n"
                  "",
                  argv[0], dev_name, frame_count);
 }
 
 //It seems like the required arguments needs to a have ':' afterwards. 
-static const char short_options[] = "d:hmruofc:xyz";
+static const char short_options[] = "d:hmruofc:xyzw:l:";
 
 static const struct option
 long_options[] = {
@@ -597,6 +600,8 @@ long_options[] = {
         { "960x540",  no_argument,       NULL, 'x' },
         { "1280x720", no_argument,       NULL, 'y' },
         { "1920x1080", no_argument,       NULL, 'z' },
+        { "width", required_argument, NULL, 'w'},
+        { "length", required_argument, NULL, 'l'},
         { 0, 0, 0, 0 }
 };
 
@@ -652,10 +657,11 @@ int main(int argc, char **argv)
 
                 case 'c':
                         errno = 0;
+                        fprintf(stderr, "%s is the frame count\n", optarg);
                         frame_count = strtol(optarg, NULL, 0);
                         if (errno)
                                 errno_exit(optarg);
-                        fprintf(stderr, "%i is the frame count\n", frame_count);
+                        //fprintf(stderr, "%i is the frame count\n", frame_count);
                         break;
                 //M.Le Roux
                 case 'x':
@@ -672,6 +678,13 @@ int main(int argc, char **argv)
                         width = 1920;
                         height = 1080;
                         break;
+
+                case 'w':
+                        width = strtol(optarg, NULL, 0);
+                        break;
+                case 'l':
+                        height = strtol(optarg, NULL, 0);
+                        break;         
                 //
                 default:
                         usage(stderr, argc, argv);
